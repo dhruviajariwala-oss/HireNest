@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireNest - Edit Job</title>
+<link rel="stylesheet" href="../css/style.css">
+
+<style>
+.edit-job-page{
+    padding:55px 20px;
+    background:#f7f8fc;
+    min-height:calc(100vh - 80px);
+}
+.edit-job-container{
+    max-width:900px;
+    margin:auto;
+}
+.edit-job-header{
+    margin-bottom:25px;
+}
+.edit-job-header h1{
+    margin:10px 0 8px;
+    font-size:34px;
+    color:#172033;
+}
+.edit-job-header p{
+    color:#697386;
+    font-size:14px;
+}
+.edit-job-card{
+    background:#fff;
+    border:1px solid #e6e8ef;
+    border-radius:18px;
+    padding:30px;
+    box-shadow:0 10px 30px rgba(23,32,51,.05);
+}
+.form-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+}
+.form-group{
+    margin-bottom:18px;
+}
+.form-group label{
+    display:block;
+    margin-bottom:7px;
+    font-size:13px;
+    font-weight:700;
+    color:#172033;
+}
+.form-group input,
+.form-group textarea{
+    width:100%;
+    border:1px solid #dfe3eb;
+    border-radius:10px;
+    padding:12px 13px;
+    font-size:14px;
+    color:#172033;
+    background:#fff;
+    outline:none;
+}
+.form-group input:focus,
+.form-group textarea:focus{
+    border-color:#4f46e5;
+}
+.form-group textarea{
+    min-height:120px;
+    resize:vertical;
+}
+.edit-job-actions{
+    display:flex;
+    gap:12px;
+    margin-top:10px;
+}
+.edit-job-save{
+    border:none;
+    background:#4f46e5;
+    color:#fff;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:700;
+    cursor:pointer;
+}
+.edit-job-save:hover{
+    background:#4338ca;
+}
+.edit-job-cancel{
+    text-decoration:none;
+    background:#eef0f4;
+    color:#172033;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:700;
+}
+.edit-job-cancel:hover{
+    background:#e3e6ec;
+}
+#editJobMessage{
+    margin:10px 0 15px;
+}
+@media(max-width:700px){
+    .form-row{
+        grid-template-columns:1fr;
+    }
+    .edit-job-card{
+        padding:20px;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        Hire<span>Nest</span>
+    </div>
+
+<nav id="mainNavbar"></nav>
+
+<div class="nav-buttons" id="navButtons"></div>
+
+</header>
+
+<section class="edit-job-page">
+
+<div class="edit-job-container">
+
+    <div class="edit-job-header">
+        <span class="section-tag">
+            EMPLOYER
+        </span>
+
+        <h1>
+            Edit Job
+        </h1>
+
+        <p>
+            Update your job details and save the changes.
+        </p>
+    </div>
+
+    <div class="edit-job-card">
+
+        <form id="editJobForm">
+
+            <div class="form-group">
+                <label for="editTitle">
+                    Job Title
+                </label>
+
+                <input
+                    type="text"
+                    id="editTitle"
+                    name="title"
+                    placeholder="e.g. Software Developer"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="editJobType">
+                    Job Type
+                </label>
+
+                <select
+                    id="editJobType"
+                    name="job_type"
+                    required
+                >
+                    <option value="">Select Job Type</option>
+                    <option value="Full Time">Full Time</option>
+                    <option value="Part Time">Part Time</option>
+                    <option value="Internship">Internship</option>
+                    <option value="Remote">Remote</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="editJobdesc">
+                    Job Description
+                </label>
+
+                <textarea
+                    id="editJobdesc"
+                    name="jobdesc"
+                    placeholder="Describe the job..."
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="editLocation">
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editLocation"
+                        name="location"
+                        placeholder="e.g. Ahmedabad"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="editBasicpay">
+                        Salary
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editBasicpay"
+                        name="basicpay"
+                        placeholder="e.g. ₹25,000 - ₹40,000"
+                        required
+                    >
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="editExperience">
+                        Experience
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editExperience"
+                        name="experience"
+                        placeholder="e.g. 0-2 Years"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="editVacno">
+                        Number of Vacancies
+                    </label>
+
+                    <input
+                        type="number"
+                        id="editVacno"
+                        name="vacno"
+                        min="1"
+                        placeholder="e.g. 5"
+                        required
+                    >
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="editUgqual">
+                        Minimum Qualification
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editUgqual"
+                        name="ugqual"
+                        placeholder="e.g. BCA / B.Tech"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="editPgqual">
+                        PG Qualification
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editPgqual"
+                        name="pgqual"
+                        placeholder="e.g. MCA / M.Tech"
+                    >
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="editFnarea">
+                        Functional Area
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editFnarea"
+                        name="fnarea"
+                        placeholder="e.g. IT / Software"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="editIndustry">
+                        Industry
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editIndustry"
+                        name="industry"
+                        placeholder="e.g. Information Technology"
+                    >
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label for="editProfile">
+                    Required Profile
+                </label>
+
+                <textarea
+                    id="editProfile"
+                    name="profile"
+                    placeholder="Describe the ideal candidate profile..."
+                ></textarea>
+            </div>
+
+            <div
+                id="editJobMessage"
+                class="login-message"
+            ></div>
+
+            <div class="edit-job-actions">
+
+                <button
+                    type="submit"
+                    id="editJobButton"
+                    class="edit-job-save"
+                >
+                    Save Changes
+                </button>
+
+                <a
+                    href="my-jobs.html"
+                    class="edit-job-cancel"
+                >
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+</section>
+
+<footer>
+<div class="footer-main">
+
+    <div class="footer-brand">
+        <div class="logo">
+            Hire<span>Nest</span>
+        </div>
+
+        <p>
+            Connecting talented people with great
+            career opportunities.
+        </p>
+    </div>
+
+    <div class="footer-links">
+
+        <h4>For Job Seekers</h4>
+
+        <a href="../jobseeker/login.html">
+            Login
+        </a>
+
+        <a href="../jobseeker/register.html">
+            Create Account
+        </a>
+
+        <a href="../jobseeker/jobs.html">
+            Find Jobs
+        </a>
+
+    </div>
+
+    <div class="footer-links">
+
+        <h4>For Employers</h4>
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="my-jobs.html">
+            My Jobs
+        </a>
+
+        <a href="applications.html">
+            Applications
+        </a>
+
+        <a href="post-job.html">
+            Post a Job
+        </a>
+
+        <a href="profile.html">
+            Profile
+        </a>
+
+    </div>
+
+    <div class="footer-links">
+
+        <h4>Company</h4>
+
+        <a href="../index.html#about">
+            About Us
+        </a>
+
+        <a href="../index.html#contact">
+            Contact
+        </a>
+
+    </div>
+
+</div>
+
+<div class="footer-bottom">
+
+    <p>
+        © 2026 HireNest. All rights reserved.
+    </p>
+
+    <p>
+        Built for connecting people with opportunities.
+    </p>
+
+</div>
+
+</footer>
+
+<script src="../js/script.js"></script>
+
+</body>
+</html>

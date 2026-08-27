@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HireNest - My Profile</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="logo">
+        Hire<span>Nest</span>
+    </div>
+
+    <nav id="mainNavbar"></nav>
+
+    <div
+        class="nav-buttons"
+        id="navButtons"
+    >
+        <!-- JavaScript buttons generate karse -->
+    </div>
+
+</header>
+
+<section class="login-section">
+
+    <div class="login-card">
+
+        <div class="login-header">
+
+            <span class="section-tag">MY PROFILE</span>
+
+            <h1 id="profileName">Loading...</h1>
+
+            <p id="profileEmail">
+                Loading profile...
+            </p>
+
+        </div>
+
+
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="text" id="profilePhone" readonly>
+        </div>
+
+
+        <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="profileLocation" readonly>
+        </div>
+
+
+        <div class="form-group">
+            <label>Experience</label>
+            <input type="text" id="profileExperience" readonly>
+        </div>
+
+
+        <div class="form-group">
+            <label>Skills</label>
+            <input type="text" id="profileSkills" readonly>
+        </div>
+
+
+        <div class="form-group">
+            <label>Basic Education</label>
+            <input type="text" id="profileEducation" readonly>
+        </div>
+
+
+        <div class="form-group">
+            <label>Master Education</label>
+            <input type="text" id="profileMasterEducation" readonly>
+        </div>
+
+
+        <div class="form-group">
+            <label>Other Qualification</label>
+            <input type="text" id="profileOtherQualification" readonly>
+        </div>
+
+
+        <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="text" id="profileDob" readonly>
+        </div>
+
+
+        <div id="profileMessage" class="login-message"></div>
+
+
+        <div class="profile-actions">
+
+            <a
+                href="edit-profile.html"
+                class="btn btn-primary"
+            >
+                Edit Profile
+            </a>
+            
+            <a
+                href="dashboard.html"
+                class="btn btn-outline"
+            >
+                Save
+            </a>
+        </div>
+    </div>
+
+</section>
+
+
+<footer>
+
+    <div class="footer-main">
+
+        <div class="footer-brand">
+
+            <div class="logo">
+                Hire<span>Nest</span>
+            </div>
+
+            <p>
+                Connecting talented people with great
+                career opportunities.
+            </p>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>For Job Seekers</h4>
+
+            <a href="login.html">Login</a>
+            <a href="register.html">Create Account</a>
+            <a href="jobs.html">Find Jobs</a>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>For Employers</h4>
+
+            <a href="../employer/login.html">Employer Login</a>
+            <a href="../employer/register.html">Post a Job</a>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>Company</h4>
+
+            <a href="../index.html#about">About Us</a>
+            <a href="../index.html#contact">Contact</a>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <p>© 2026 HireNest. All rights reserved.</p>
+
+        <p>
+            Built for connecting people with opportunities.
+        </p>
+
+    </div>
+
+</footer>
+
+
+<script src="../js/script.js"></script>
+
+<script>
+
+const API_BASE_PROFILE = "http://localhost/Job_Portal/Backend";
+
+async function loadProfile() {
+
+    const message = document.getElementById("profileMessage");
+
+    try {
+
+        const response = await fetch(
+            `${API_BASE_PROFILE}/jobseeker/profile.php`,
+            {
+                method: "GET",
+                credentials: "include"
+            }
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+
+            message.textContent =
+                data.message || "Unable to load profile.";
+
+            message.className =
+                "login-message show error";
+
+            return;
+        }
+
+        const user = data.user;
+
+        document.getElementById("profileName").textContent =
+            user.name || "Job Seeker";
+
+        document.getElementById("profileEmail").textContent =
+            user.email || "Email not available";
+
+        document.getElementById("profilePhone").value =
+            user.phone || "Not provided";
+
+        document.getElementById("profileLocation").value =
+            user.location || "Not provided";
+
+        document.getElementById("profileExperience").value =
+            user.experience || "Not provided";
+
+        document.getElementById("profileSkills").value =
+            user.skills || "Not provided";
+
+        document.getElementById("profileEducation").value =
+            user.basic_edu || "Not provided";
+
+        document.getElementById("profileMasterEducation").value =
+            user.master_edu || "Not provided";
+
+        document.getElementById("profileOtherQualification").value =
+            user.other_qual || "Not provided";
+
+        document.getElementById("profileDob").value =
+            user.dob || "Not provided";
+
+    } catch (error) {
+
+        console.error("Profile loading error:", error);
+
+        message.textContent =
+            "Unable to connect to server.";
+
+        message.className =
+            "login-message show error";
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    loadProfile();
+});
+
+</script>
+
+</body>
+</html>
