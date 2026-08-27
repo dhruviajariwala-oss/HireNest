@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>HireNest - Manage Users</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        *{box-sizing:border-box}
+        body{margin:0;background:#f5f7fb;color:#172033;font-family:Arial,sans-serif}
+        .admin-layout{display:flex;min-height:100vh}
+        .admin-sidebar{width:245px;background:#172033;color:#fff;padding:25px 16px;position:fixed;inset:0 auto 0 0}
+        .admin-brand{font-size:25px;font-weight:700;padding:0 12px 30px}
+        .admin-brand span{color:#6366f1}
+        .admin-menu{display:flex;flex-direction:column;gap:6px}
+        .admin-menu a{color:#cbd5e1;text-decoration:none;padding:12px 15px;border-radius:9px;font-size:15px}
+        .admin-menu a:hover,.admin-menu a.active{background:#4f46e5;color:#fff}
+        .admin-main{margin-left:245px;width:calc(100% - 245px);min-height:100vh}
+        .admin-topbar{height:70px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+        .admin-topbar h2{margin:0;font-size:21px}
+        .admin-user{display:flex;align-items:center;gap:14px}
+        .admin-email{color:#697386;font-size:14px}
+        .admin-logout{border:1px solid #ef4444;color:#ef4444;background:#fff;padding:8px 15px;border-radius:8px;cursor:pointer;font-weight:600}
+        .admin-logout:hover{background:#ef4444;color:#fff}
+        .admin-content{padding:28px}
+        .page-heading{margin-bottom:22px}
+        .page-heading h1{margin:0 0 6px;font-size:28px}
+        .page-heading p{margin:0;color:#697386}
+        .users-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 4px 15px rgba(23,32,51,.04);overflow:hidden}
+        .users-toolbar{padding:18px;display:flex;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb}
+        .search-box{position:relative;flex:1;max-width:500px}
+        .search-box input{width:100%;padding:11px 14px 11px 40px;border:1px solid #d9dee8;border-radius:9px;font-size:14px;outline:none}
+        .search-box input:focus{border-color:#6366f1}
+        .search-icon{position:absolute;left:14px;top:10px;font-size:17px;color:#697386}
+        .user-filter{padding:11px 13px;border:1px solid #d9dee8;border-radius:9px;background:#fff;color:#172033;font-size:14px;outline:none;cursor:pointer}
+        .table-wrapper{overflow-x:auto}
+        .users-table{width:100%;border-collapse:collapse;min-width:700px}
+        .users-table th{background:#f8f9fc;color:#697386;font-size:13px;text-align:left;padding:14px 18px;font-weight:600}
+        .users-table td{padding:15px 18px;border-top:1px solid #eef0f4;font-size:14px}
+        .users-table tbody tr:hover{background:#fafbff}
+        .user-name{font-weight:600;color:#172033}
+        .user-email{color:#697386}
+        .type-badge,.status-badge{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:600}
+        .type-jobseeker{background:#eef0ff;color:#4338ca}
+        .type-employer{background:#fff4e5;color:#b45309}
+        .status-active{background:#dcfce7;color:#166534}
+        .status-inactive{background:#fee2e2;color:#991b1b}
+        .action-buttons{display:flex;gap:7px}
+        .view-btn,.delete-btn{border:0;padding:7px 11px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600}
+        .view-btn{background:#eef0ff;color:#4338ca}
+        .view-btn:hover{background:#6366f1;color:#fff}
+        .delete-btn{background:#fee2e2;color:#dc2626}
+        .delete-btn:hover{background:#dc2626;color:#fff}
+        .empty-state{text-align:center;padding:45px 20px;color:#697386;display:none}
+        .empty-icon{font-size:35px;margin-bottom:8px}
+        .loading{text-align:center;padding:35px;color:#697386}
+        .message{margin-bottom:15px;padding:11px 14px;border-radius:8px;font-size:14px;display:none}
+        .message.show{display:block}
+        .message.error{background:#fee2e2;color:#991b1b}
+        .message.success{background:#dcfce7;color:#166534}
+        .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
+        .modal-overlay.show{display:flex}
+        .user-modal{width:100%;max-width:480px;background:#fff;border-radius:15px;box-shadow:0 20px 50px rgba(0,0,0,.18);overflow:hidden}
+        .modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #e5e7eb}
+        .modal-header h3{margin:0;font-size:19px}
+        .modal-close{border:0;background:none;font-size:22px;color:#697386;cursor:pointer}
+        .modal-body{padding:20px}
+        .detail-row{display:flex;justify-content:space-between;gap:20px;padding:13px 0;border-bottom:1px solid #eef0f4;font-size:14px}
+        .detail-row:last-child{border-bottom:0}
+        .detail-label{color:#697386}
+        .detail-value{font-weight:600;text-align:right}
+        .modal-footer{padding:15px 20px;border-top:1px solid #e5e7eb;text-align:right}
+        .close-btn{border:1px solid #d9dee8;background:#fff;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600}
+        .confirm-modal{max-width:400px}
+        .confirm-body{text-align:center;padding:28px 22px}
+        .confirm-icon{font-size:40px;margin-bottom:10px}
+        .confirm-body h3{margin:0 0 8px}
+        .confirm-body p{margin:0;color:#697386;font-size:14px;line-height:1.5}
+        .confirm-footer{display:flex;justify-content:flex-end;gap:10px;padding:15px 20px;border-top:1px solid #e5e7eb}
+        .cancel-btn,.confirm-delete-btn{padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600}
+        .cancel-btn{border:1px solid #d9dee8;background:#fff}
+        .confirm-delete-btn{border:1px solid #dc2626;background:#dc2626;color:#fff}
+        .confirm-delete-btn:hover{background:#b91c1c}
+        @media(max-width:700px){
+            .admin-sidebar{width:200px}
+            .admin-main{margin-left:200px;width:calc(100% - 200px)}
+            .admin-content{padding:20px}
+            .admin-email{display:none}
+            .users-toolbar{flex-direction:column;align-items:stretch}
+            .search-box{max-width:none}
+        }
+        @media(max-width:550px){
+            .admin-layout{display:block}
+            .admin-sidebar{position:relative;width:100%}
+            .admin-main{margin-left:0;width:100%}
+            .admin-menu{flex-direction:row;overflow-x:auto}
+            .admin-menu a{white-space:nowrap}
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-brand">Hire<span>Nest</span></div>
+            <nav class="admin-menu">
+                <a href="dashboard.html">📊 Dashboard</a>
+                <a href="users.html" class="active">👥 Users</a>
+                <a href="jobs.html">💼 Jobs</a>
+                <a href="applications.html">📄 Applications</a>
+            </nav>
+        </aside>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h2>Users Management</h2>
+            <div class="admin-user">
+                <span class="admin-email" id="adminEmail">Admin</span>
+                <button class="admin-logout" type="button" onclick="adminLogout()">Logout</button>
+            </div>
+        </header>
+
+        <section class="admin-content">
+            <div class="page-heading">
+                <h1>Manage Users</h1>
+                <p>View and manage registered job seekers and employers.</p>
+            </div>
+
+            <div id="usersMessage" class="message"></div>
+
+            <div class="users-card">
+                <div class="users-toolbar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="Search by name or email...">
+                    </div>
+
+                    <select id="userFilter" class="user-filter">
+                        <option value="all">All Users</option>
+                        <option value="Job Seeker">Job Seekers</option>
+                        <option value="Employer">Employers</option>
+                    </select>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>User Type</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+
+                    <div id="loadingState" class="loading">Loading users...</div>
+
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        <strong>No users found</strong>
+                        <p>Try changing your search or filter.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div class="modal-overlay" id="userModal">
+    <div class="user-modal">
+        <div class="modal-header">
+            <h3>User Details</h3>
+            <button class="modal-close" type="button" onclick="closeUserModal()">×</button>
+        </div>
+
+        <div class="modal-body" id="userDetails"></div>
+
+        <div class="modal-footer">
+            <button class="close-btn" type="button" onclick="closeUserModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="deleteModal">
+    <div class="user-modal confirm-modal">
+        <div class="modal-header">
+            <h3>Delete User</h3>
+            <button class="modal-close" type="button" onclick="closeDeleteModal()">×</button>
+        </div>
+
+        <div class="confirm-body">
+            <div class="confirm-icon">⚠️</div>
+            <h3>Are you sure?</h3>
+            <p id="deleteText">This user will be permanently deleted.</p>
+        </div>
+
+        <div class="confirm-footer">
+            <button class="cancel-btn" type="button" onclick="closeDeleteModal()">Cancel</button>
+            <button class="confirm-delete-btn" type="button" id="confirmDeleteButton" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE="http://localhost/Job_Portal/Backend";
+    let allUsers=[];
+    let deleteUserId=null;
+
+    function checkAdminLogin(){
+        const logId=localStorage.getItem("admin_log_id");
+        const usertype=localStorage.getItem("admin_usertype");
+
+        if(!logId||usertype!=="Admin"){
+            window.location.replace("login.html");
+            return false;
+        }
+
+        const email=localStorage.getItem("admin_email");
+        if(email){
+            document.getElementById("adminEmail").textContent=email;
+        }
+
+        return true;
+    }
+
+    async function loadUsers(){
+        if(!checkAdminLogin())return;
+
+        const loading=document.getElementById("loadingState");
+        const tableBody=document.getElementById("usersTableBody");
+
+        try{
+            const response=await fetch(`${API_BASE}/admin/users.php`,{method:"GET"});
+
+            if(!response.ok)throw new Error("Server error");
+
+            const data=await response.json();
+
+            loading.style.display="none";
+
+            if(!data.success){
+                showMessage(data.message||"Unable to load users.","error");
+                return;
+            }
+
+            allUsers=data.users||[];
+            renderUsers();
+        }catch(error){
+            console.error("Users error:",error);
+            loading.style.display="none";
+            showMessage("Unable to connect to server.","error");
+            tableBody.innerHTML="";
+        }
+    }
+
+    function renderUsers(){
+        const search=document.getElementById("searchInput").value.trim().toLowerCase();
+        const filter=document.getElementById("userFilter").value;
+        const tableBody=document.getElementById("usersTableBody");
+        const emptyState=document.getElementById("emptyState");
+
+        const filtered=allUsers.filter(user=>{
+            const name=(user.name||"").toLowerCase();
+            const email=(user.email||"").toLowerCase();
+            const matchesSearch=name.includes(search)||email.includes(search);
+            const matchesFilter=filter==="all"||user.usertype===filter;
+            return matchesSearch&&matchesFilter;
+        });
+
+        tableBody.innerHTML="";
+
+        if(filtered.length===0){
+            emptyState.style.display="block";
+            return;
+        }
+
+        emptyState.style.display="none";
+
+        filtered.forEach(user=>{
+            const row=document.createElement("tr");
+            const typeClass=user.usertype==="Employer"?"type-employer":"type-jobseeker";
+            const statusClass=String(user.status)==="1"?"status-active":"status-inactive";
+            const statusText=String(user.status)==="1"?"Active":"Inactive";
+
+            row.innerHTML=`
+                <td>
+                    <div class="user-name">${escapeHtml(user.name||"N/A")}</div>
+                </td>
+                <td>
+                    <div class="user-email">${escapeHtml(user.email||"N/A")}</div>
+                </td>
+                <td>
+                    <span class="type-badge ${typeClass}">${escapeHtml(user.usertype||"N/A")}</span>
+                </td>
+                <td>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="view-btn" type="button" onclick="viewUser(${Number(user.log_id)})">View</button>
+                        <button class="delete-btn" type="button" onclick="openDeleteModal(${Number(user.log_id)},'${escapeAttribute(user.name||"this user")}')">Delete</button>
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    async function viewUser(logId){
+        const modal=document.getElementById("userModal");
+        const details=document.getElementById("userDetails");
+
+        details.innerHTML="<div class='loading'>Loading user details...</div>";
+        modal.classList.add("show");
+
+        try{
+            const response=await fetch(`${API_BASE}/admin/get_user_details.php?log_id=${encodeURIComponent(logId)}`,{method:"GET"});
+
+            if(!response.ok)throw new Error("Server error");
+
+            const data=await response.json();
+
+            if(!data.success){
+                details.innerHTML=`<div class="message show error">${escapeHtml(data.message||"Unable to load user details.")}</div>`;
+                return;
+            }
+
+            const user=data.user;
+            const status=String(user.status)==="1"?"Active":"Inactive";
+
+            details.innerHTML=`
+                <div class="detail-row">
+                    <span class="detail-label">User ID</span>
+                    <span class="detail-value">${escapeHtml(String(user.log_id||"N/A"))}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Name</span>
+                    <span class="detail-value">${escapeHtml(user.name||"N/A")}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value">${escapeHtml(user.email||"N/A")}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">User Type</span>
+                    <span class="detail-value">${escapeHtml(user.usertype||"N/A")}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value">${status}</span>
+                </div>
+            `;
+        }catch(error){
+            console.error("User details error:",error);
+            details.innerHTML='<div class="message show error">Unable to connect to server.</div>';
+        }
+    }
+
+    function closeUserModal(){
+        document.getElementById("userModal").classList.remove("show");
+    }
+
+    function openDeleteModal(logId,name){
+        deleteUserId=logId;
+        document.getElementById("deleteText").textContent=`Are you sure you want to delete ${name}? This action cannot be undone.`;
+        document.getElementById("deleteModal").classList.add("show");
+    }
+
+    function closeDeleteModal(){
+        deleteUserId=null;
+        document.getElementById("deleteModal").classList.remove("show");
+    }
+
+    async function confirmDelete(){
+        if(!deleteUserId)return;
+
+        const button=document.getElementById("confirmDeleteButton");
+        button.disabled=true;
+        button.textContent="Deleting...";
+
+        try{
+            const body=new URLSearchParams();
+            body.append("log_id",String(deleteUserId));
+
+            const response=await fetch(`${API_BASE}/admin/delete_user.php`,{
+                method:"DELETE",
+                headers:{"Content-Type":"application/x-www-form-urlencoded"},
+                body:body
+            });
+
+            if(!response.ok)throw new Error("Server error");
+
+            const data=await response.json();
+
+            if(!data.success){
+                showMessage(data.message||"Unable to delete user.","error");
+                return;
+            }
+
+            closeDeleteModal();
+            showMessage("User deleted successfully.","success");
+            await loadUsers();
+        }catch(error){
+            console.error("Delete user error:",error);
+            showMessage("Unable to connect to server.","error");
+        }finally{
+            button.disabled=false;
+            button.textContent="Delete";
+        }
+    }
+
+    function showMessage(text,type){
+        const message=document.getElementById("usersMessage");
+        message.textContent=text;
+        message.className=`message show ${type}`;
+
+        setTimeout(()=>{
+            message.className="message";
+        },3000);
+    }
+
+    function escapeHtml(value){
+        return String(value).replace(/[&<>"']/g,char=>({
+            "&":"&amp;",
+            "<":"&lt;",
+            ">":"&gt;",
+            '"':"&quot;",
+            "'":"&#039;"
+        }[char]));
+    }
+
+    function escapeAttribute(value){
+        return escapeHtml(value).replace(/`/g,"&#096;");
+    }
+
+    function adminLogout(){
+        localStorage.removeItem("admin_log_id");
+        localStorage.removeItem("admin_email");
+        localStorage.removeItem("admin_usertype");
+        window.location.replace("login.html");
+    }
+
+    document.getElementById("searchInput").addEventListener("input",renderUsers);
+    document.getElementById("userFilter").addEventListener("change",renderUsers);
+
+    document.getElementById("userModal").addEventListener("click",function(event){
+        if(event.target===this)closeUserModal();
+    });
+
+    document.getElementById("deleteModal").addEventListener("click",function(event){
+        if(event.target===this)closeDeleteModal();
+    });
+
+    document.addEventListener("DOMContentLoaded",loadUsers);
+</script>
+</body>
+</html>

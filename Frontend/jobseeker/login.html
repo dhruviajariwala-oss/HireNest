@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HireNest - Job Seeker Login</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="logo">
+        Hire<span>Nest</span>
+    </div>
+
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="jobs.html">Find Jobs</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#contact">Contact</a>
+    </nav>
+
+    <div class="nav-buttons">
+        <a href="login.html" class="btn btn-outline">Job Seeker</a>
+        <a href="../employer/login.html" class="btn btn-primary">Employer</a>
+    </div>
+
+</header>
+
+
+<section class="login-section">
+
+    <div class="login-card">
+
+        <div class="login-header">
+
+            <span class="section-tag">WELCOME BACK</span>
+
+            <h1>Job Seeker Login</h1>
+
+            <p>
+                Login to your HireNest account and find your next opportunity.
+            </p>
+
+        </div>
+
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="email">Email Address</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                >
+
+            </div>
+
+
+            <div id="loginMessage" class="login-message"></div>
+
+
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginButton"
+            >
+                Login
+            </button>
+
+        </form>
+
+
+        <div class="login-footer">
+
+            <p>
+                Don't have an account?
+                <a href="register.html">Create Account</a>
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <div class="footer-main">
+
+        <div class="footer-brand">
+
+            <div class="logo">
+                Hire<span>Nest</span>
+            </div>
+
+            <p>
+                Connecting talented people with great
+                career opportunities.
+            </p>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>For Job Seekers</h4>
+
+            <a href="login.html">Login</a>
+            <a href="register.html">Create Account</a>
+            <a href="jobs.html">Find Jobs</a>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>For Employers</h4>
+
+            <a href="../employer/login.html">Employer Login</a>
+            <a href="../employer/register.html">Post a Job</a>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>Company</h4>
+
+            <a href="../index.html#about">About Us</a>
+            <a href="../index.html#contact">Contact</a>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <p>© 2026 HireNest. All rights reserved.</p>
+
+        <p>
+            Built for connecting people with opportunities.
+        </p>
+
+    </div>
+
+</footer>
+
+
+<script src="../js/script.js"></script>
+
+</body>
+</html>

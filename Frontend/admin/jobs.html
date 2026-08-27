@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>HireNest - Manage Jobs</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        *{box-sizing:border-box}
+        body{margin:0;background:#f5f7fb;color:#172033;font-family:Arial,sans-serif}
+        .admin-layout{display:flex;min-height:100vh}
+        .admin-sidebar{width:245px;background:#172033;color:#fff;padding:25px 16px;position:fixed;inset:0 auto 0 0}
+        .admin-brand{font-size:25px;font-weight:700;padding:0 12px 30px}
+        .admin-brand span{color:#6366f1}
+        .admin-menu{display:flex;flex-direction:column;gap:6px}
+        .admin-menu a{color:#cbd5e1;text-decoration:none;padding:12px 15px;border-radius:9px;font-size:15px}
+        .admin-menu a:hover,.admin-menu a.active{background:#4f46e5;color:#fff}
+        .admin-main{margin-left:245px;width:calc(100% - 245px);min-height:100vh}
+        .admin-topbar{height:70px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+        .admin-topbar h2{margin:0;font-size:21px}
+        .admin-user{display:flex;align-items:center;gap:14px}
+        .admin-email{color:#697386;font-size:14px}
+        .admin-logout{border:1px solid #ef4444;color:#ef4444;background:#fff;padding:8px 15px;border-radius:8px;cursor:pointer;font-weight:600}
+        .admin-logout:hover{background:#ef4444;color:#fff}
+        .admin-content{padding:28px}
+        .page-heading{margin-bottom:22px}
+        .page-heading h1{margin:0 0 6px;font-size:28px}
+        .page-heading p{margin:0;color:#697386}
+        .jobs-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 4px 15px rgba(23,32,51,.04);overflow:hidden}
+        .jobs-toolbar{padding:18px;display:flex;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb}
+        .search-box{position:relative;flex:1;max-width:430px}
+        .search-box input{width:100%;padding:11px 14px 11px 40px;border:1px solid #d9dee8;border-radius:9px;font-size:14px;outline:none}
+        .search-box input:focus{border-color:#6366f1}
+        .search-icon{position:absolute;left:14px;top:10px;font-size:17px;color:#697386}
+        .job-filter{padding:11px 13px;border:1px solid #d9dee8;border-radius:9px;background:#fff;color:#172033;font-size:14px;outline:none;cursor:pointer}
+        .table-wrapper{overflow-x:auto}
+        .jobs-table{width:100%;border-collapse:collapse;min-width:850px}
+        .jobs-table th{background:#f8f9fc;color:#697386;font-size:13px;text-align:left;padding:14px 18px;font-weight:600}
+        .jobs-table td{padding:15px 18px;border-top:1px solid #eef0f4;font-size:14px}
+        .jobs-table tbody tr:hover{background:#fafbff}
+        .job-title{font-weight:600;color:#172033}
+        .company-name{color:#697386}
+        .posted-by{color:#697386}
+        .type-badge,.status-badge{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:600}
+        .type-fulltime{background:#eef0ff;color:#4338ca}
+        .type-parttime{background:#fff4e5;color:#b45309}
+        .type-internship{background:#ecfdf5;color:#047857}
+        .type-remote{background:#f3e8ff;color:#7e22ce}
+        .type-other{background:#f1f5f9;color:#475569}
+        .status-active{background:#dcfce7;color:#166534}
+        .status-inactive{background:#fee2e2;color:#991b1b}
+        .action-buttons{display:flex;gap:7px}
+        .view-btn,.delete-btn{border:0;padding:7px 11px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600}
+        .view-btn{background:#eef0ff;color:#4338ca}
+        .view-btn:hover{background:#6366f1;color:#fff}
+        .delete-btn{background:#fee2e2;color:#dc2626}
+        .delete-btn:hover{background:#dc2626;color:#fff}
+        .empty-state{text-align:center;padding:45px 20px;color:#697386;display:none}
+        .empty-icon{font-size:35px;margin-bottom:8px}
+        .loading{text-align:center;padding:35px;color:#697386}
+        .message{margin-bottom:15px;padding:11px 14px;border-radius:8px;font-size:14px;display:none}
+        .message.show{display:block}
+        .message.error{background:#fee2e2;color:#991b1b}
+        .message.success{background:#dcfce7;color:#166534}
+        .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
+        .modal-overlay.show{display:flex}
+        .job-modal{
+            width:100%;max-width:650px;max-height:90vh;
+            background:#fff;
+            border-radius:15px;
+            box-shadow:0 20px 50px rgba(0,0,0,.18);
+            overflow:hidden;
+            display:flex;
+            flex-direction:column;
+        }
+        .modal-body{
+            padding:20px;
+            overflow-y:auto;
+            max-height:calc(90vh - 130px);
+        }
+        .modal-footer{
+            padding:15px 20px;
+            border-top:1px solid #e5e7eb;
+            text-align:right;
+            background:#fff;
+            flex-shrink:0;
+        }        
+        .modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #e5e7eb}
+        .modal-header h3{margin:0;font-size:19px}
+        .modal-close{border:0;background:none;font-size:22px;color:#697386;cursor:pointer}
+        .detail-row{display:flex;justify-content:space-between;gap:20px;padding:13px 0;border-bottom:1px solid #eef0f4;font-size:14px}
+        .detail-row:last-child{border-bottom:0}
+        .detail-label{color:#697386}
+        .detail-value{font-weight:600;text-align:right;max-width:65%}
+        .description-row{display:block}
+        .description-row .detail-value{display:block;max-width:100%;text-align:left;margin-top:8px;line-height:1.6;font-weight:400;color:#4b5563}
+        .modal-footer{padding:15px 20px;border-top:1px solid #e5e7eb;text-align:right}
+        .close-btn{border:1px solid #d9dee8;background:#fff;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600}
+        .confirm-modal{max-width:400px}
+        .confirm-body{text-align:center;padding:28px 22px}
+        .confirm-icon{font-size:40px;margin-bottom:10px}
+        .confirm-body h3{margin:0 0 8px}
+        .confirm-body p{margin:0;color:#697386;font-size:14px;line-height:1.5}
+        .confirm-footer{display:flex;justify-content:flex-end;gap:10px;padding:15px 20px;border-top:1px solid #e5e7eb}
+        .cancel-btn,.confirm-delete-btn{padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600}
+        .cancel-btn{border:1px solid #d9dee8;background:#fff}
+        .confirm-delete-btn{border:1px solid #dc2626;background:#dc2626;color:#fff}
+        .confirm-delete-btn:hover{background:#b91c1c}
+        @media(max-width:700px){
+            .admin-sidebar{width:200px}
+            .admin-main{margin-left:200px;width:calc(100% - 200px)}
+            .admin-content{padding:20px}
+            .admin-email{display:none}
+            .jobs-toolbar{flex-direction:column;align-items:stretch}
+            .search-box{max-width:none}
+        }
+        @media(max-width:550px){
+            .admin-layout{display:block}
+            .admin-sidebar{position:relative;width:100%}
+            .admin-main{margin-left:0;width:100%}
+            .admin-menu{flex-direction:row;overflow-x:auto}
+            .admin-menu a{white-space:nowrap}
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-brand">Hire<span>Nest</span></div>
+            <nav class="admin-menu">
+                <a href="dashboard.html">📊 Dashboard</a>
+                <a href="users.html">👥 Users</a>
+                <a href="jobs.html" class="active">💼 Jobs</a>
+                <a href="applications.html">📄 Applications</a>
+            </nav>
+        </aside>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h2>Jobs Management</h2>
+            <div class="admin-user">
+                <span class="admin-email" id="adminEmail">Admin</span>
+                <button class="admin-logout" type="button" onclick="adminLogout()">Logout</button>
+            </div>
+        </header>
+
+        <section class="admin-content">
+            <div class="page-heading">
+                <h1>Manage Jobs</h1>
+                <p>View and manage all job postings.</p>
+            </div>
+
+            <div id="jobsMessage" class="message"></div>
+
+            <div class="jobs-card">
+                <div class="jobs-toolbar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="Search by job title or company...">
+                    </div>
+
+                    <select id="jobTypeFilter" class="job-filter">
+                        <option value="all">All Job Types</option>
+                        <option value="Full Time">Full Time</option>
+                        <option value="Part Time">Part Time</option>
+                        <option value="Internship">Internship</option>
+                        <option value="Remote">Remote</option>
+                    </select>
+
+                    <select id="statusFilter" class="job-filter">
+                        <option value="all">All Status</option>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="jobs-table">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Posted By</th>
+                                <th>Job Type</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobsTableBody"></tbody>
+                    </table>
+
+                    <div id="loadingState" class="loading">Loading jobs...</div>
+
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-icon">💼</div>
+                        <strong>No jobs found</strong>
+                        <p>Try changing your search or filter.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div class="modal-overlay" id="jobModal">
+    <div class="job-modal">
+        <div class="modal-header">
+            <h3>Job Details</h3>
+            <button class="modal-close" type="button" onclick="closeJobModal()">×</button>
+        </div>
+
+        <div class="modal-body" id="jobDetails"></div>
+
+        <div class="modal-footer">
+            <button class="close-btn" type="button" onclick="closeJobModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="deleteModal">
+    <div class="job-modal confirm-modal">
+        <div class="modal-header">
+            <h3>Delete Job</h3>
+            <button class="modal-close" type="button" onclick="closeDeleteModal()">×</button>
+        </div>
+
+        <div class="confirm-body">
+            <div class="confirm-icon">⚠️</div>
+            <h3>Are you sure?</h3>
+            <p id="deleteText">This job will be permanently deleted.</p>
+        </div>
+
+        <div class="confirm-footer">
+            <button class="cancel-btn" type="button" onclick="closeDeleteModal()">Cancel</button>
+            <button class="confirm-delete-btn" type="button" id="confirmDeleteButton" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE="http://localhost/Job_Portal/Backend";
+    let allJobs=[];
+    let deleteJobId=null;
+
+    function checkAdminLogin(){
+        const logId=localStorage.getItem("admin_log_id");
+        const usertype=localStorage.getItem("admin_usertype");
+
+        if(!logId||usertype!=="Admin"){
+            window.location.replace("login.html");
+            return false;
+        }
+
+        const email=localStorage.getItem("admin_email");
+
+        if(email){
+            document.getElementById("adminEmail").textContent=email;
+        }
+
+        return true;
+    }
+
+    async function loadJobs(){
+        if(!checkAdminLogin())return;
+
+        const loading=document.getElementById("loadingState");
+        const tableBody=document.getElementById("jobsTableBody");
+
+        try{
+            const response=await fetch(`${API_BASE}/admin/jobs.php`,{method:"GET"});
+
+            if(!response.ok)throw new Error("Server error");
+
+            const data=await response.json();
+
+            loading.style.display="none";
+
+            if(!data.success){
+                showMessage(data.message||"Unable to load jobs.","error");
+                return;
+            }
+
+            allJobs=data.jobs||[];
+            renderJobs();
+        }catch(error){
+            console.error("Jobs error:",error);
+            loading.style.display="none";
+            showMessage("Unable to connect to server.","error");
+            tableBody.innerHTML="";
+        }
+    }
+
+    function renderJobs(){
+        const search=document.getElementById("searchInput").value.trim().toLowerCase();
+        const typeFilter=document.getElementById("jobTypeFilter").value;
+        const statusFilter=document.getElementById("statusFilter").value;
+        const tableBody=document.getElementById("jobsTableBody");
+        const emptyState=document.getElementById("emptyState");
+
+        const filtered=allJobs.filter(job=>{
+            const title=(job.title||job.job_title||"").toLowerCase();
+            const company=(job.company||job.company_name||"").toLowerCase();
+            const type=job.job_type||job.type||"";
+            const status=String(job.status??"");
+
+            const matchesSearch=title.includes(search)||company.includes(search);
+            const matchesType=typeFilter==="all"||type===typeFilter;
+            const matchesStatus=statusFilter==="all"||status===statusFilter;
+
+            return matchesSearch&&matchesType&&matchesStatus;
+        });
+
+        tableBody.innerHTML="";
+
+        if(filtered.length===0){
+            emptyState.style.display="block";
+            return;
+        }
+
+        emptyState.style.display="none";
+
+        filtered.forEach(job=>{
+            const row=document.createElement("tr");
+            const title=job.title||job.job_title||"N/A";
+            const company=job.company||job.company_name||"N/A";
+            const postedBy=job.posted_by||job.employer_name||job.name||"N/A";
+            const type=job.job_type||job.type||"N/A";
+            const status=String(job.status)==="1"?"Active":"Inactive";
+            const statusClass=String(job.status)==="1"?"status-active":"status-inactive";
+
+            let typeClass="type-other";
+
+            if(type==="Full Time")typeClass="type-fulltime";
+            else if(type==="Part Time")typeClass="type-parttime";
+            else if(type==="Internship")typeClass="type-internship";
+            else if(type==="Remote")typeClass="type-remote";
+
+            row.innerHTML=`
+                <td>
+                    <div class="job-title">${escapeHtml(title)}</div>
+                </td>
+                <td>
+                    <div class="company-name">${escapeHtml(company)}</div>
+                </td>
+                <td>
+                    <div class="posted-by">${escapeHtml(postedBy)}</div>
+                </td>
+                <td>
+                    <span class="type-badge ${typeClass}">${escapeHtml(type)}</span>
+                </td>
+                <td>
+                    <span class="status-badge ${statusClass}">${status}</span>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="view-btn" type="button" onclick="viewJob(${Number(job.jobid)})">View</button>
+                        <button class="delete-btn" type="button" onclick="openDeleteModal(${Number(job.jobid)},'${escapeAttribute(title)}')">Delete</button>
+                    </div>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    async function viewJob(jobId){
+        const modal=document.getElementById("jobModal");
+        const details=document.getElementById("jobDetails");
+
+        details.innerHTML="<div class='loading'>Loading job details...</div>";
+        modal.classList.add("show");
+
+        try{
+            const response = await fetch(
+                `${API_BASE}/admin/get_job_details.php?jobid=${encodeURIComponent(jobId)}`,
+                {
+                    method: "GET"
+                }
+            );
+
+            if(!response.ok)throw new Error("Server error");
+
+            const data=await response.json();
+
+            if(!data.success){
+                details.innerHTML=`<div class="message show error">${escapeHtml(data.message||"Unable to load job details.")}</div>`;
+                return;
+            }
+
+            const job=data.job;
+
+            details.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Job ID</span>
+                    <span class="detail-value">
+                        ${escapeHtml(String(job.jobid || "N/A"))}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Job Title</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.title || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Company</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.employer_name || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Job Type</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.job_type || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Location</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.location || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Salary</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.basicpay || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Experience</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.experience || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Vacancies</span>
+                    <span class="detail-value">
+                        ${escapeHtml(String(job.vacno || "N/A"))}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Industry</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.industry || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">UG Qualification</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.ugqual || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">PG Qualification</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.pgqual || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Functional Area</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.fnarea || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Post Date</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.postdate || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row description-row">
+                    <span class="detail-label">Description</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.jobdesc || "N/A")}
+                    </span>
+                </div>
+
+                <div class="detail-row description-row">
+                    <span class="detail-label">Profile</span>
+                    <span class="detail-value">
+                        ${escapeHtml(job.profile || "N/A")}
+                    </span>
+                </div>
+            `;
+        }catch(error){
+            console.error("Job details error:",error);
+            details.innerHTML='<div class="message show error">Unable to connect to server.</div>';
+        }
+    }
+
+    function closeJobModal(){
+        document.getElementById("jobModal").classList.remove("show");
+    }
+
+    function openDeleteModal(jobId,title){
+        deleteJobId=jobId;
+        document.getElementById("deleteText").textContent=`Are you sure you want to delete "${title}"? This action cannot be undone.`;
+        document.getElementById("deleteModal").classList.add("show");
+    }
+
+    function closeDeleteModal(){
+        deleteJobId=null;
+        document.getElementById("deleteModal").classList.remove("show");
+    }
+
+    async function confirmDelete(){
+        if(!deleteJobId)return;
+
+        const button=document.getElementById("confirmDeleteButton");
+        button.disabled=true;
+        button.textContent="Deleting...";
+
+        try{
+            const body=new URLSearchParams();
+            body.append("jobid", String(deleteJobId));
+            const response=await fetch(`${API_BASE}/admin/delete_job.php`,{
+                method:"DELETE",
+                headers:{"Content-Type":"application/x-www-form-urlencoded"},
+                body:body
+            });
+
+            if(!response.ok)throw new Error("Server error");
+
+            const data=await response.json();
+
+            if(!data.success){
+                showMessage(data.message||"Unable to delete job.","error");
+                return;
+            }
+
+            closeDeleteModal();
+            showMessage("Job deleted successfully.","success");
+            await loadJobs();
+        }catch(error){
+            console.error("Delete job error:",error);
+            showMessage("Unable to connect to server.","error");
+        }finally{
+            button.disabled=false;
+            button.textContent="Delete";
+        }
+    }
+
+    function showMessage(text,type){
+        const message=document.getElementById("jobsMessage");
+        message.textContent=text;
+        message.className=`message show ${type}`;
+
+        setTimeout(()=>{
+            message.className="message";
+        },3000);
+    }
+
+    function escapeHtml(value){
+        return String(value).replace(/[&<>"']/g,char=>({
+            "&":"&amp;",
+            "<":"&lt;",
+            ">":"&gt;",
+            '"':"&quot;",
+            "'":"&#039;"
+        }[char]));
+    }
+
+    function escapeAttribute(value){
+        return escapeHtml(value).replace(/`/g,"&#096;");
+    }
+
+    function adminLogout(){
+        localStorage.removeItem("admin_log_id");
+        localStorage.removeItem("admin_email");
+        localStorage.removeItem("admin_usertype");
+        window.location.replace("login.html");
+    }
+
+    document.getElementById("searchInput").addEventListener("input",renderJobs);
+    document.getElementById("jobTypeFilter").addEventListener("change",renderJobs);
+    document.getElementById("statusFilter").addEventListener("change",renderJobs);
+
+    document.getElementById("jobModal").addEventListener("click",function(event){
+        if(event.target===this)closeJobModal();
+    });
+
+    document.getElementById("deleteModal").addEventListener("click",function(event){
+        if(event.target===this)closeDeleteModal();
+    });
+
+    document.addEventListener("DOMContentLoaded",loadJobs);
+</script>
+</body>
+</html>

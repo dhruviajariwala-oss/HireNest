@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireNest - Admin Login</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<section class="login-section">
+    <div class="login-card">
+        <div class="login-header">
+            <span class="section-tag">ADMIN PANEL</span>
+            <h1>Admin Login</h1>
+            <p>Sign in to manage HireNest.</p>
+        </div>
+
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label for="adminEmail">Email</label>
+                <input type="email" id="adminEmail" name="email" placeholder="Enter admin email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" name="password" placeholder="Enter admin password" required>
+            </div>
+
+            <div id="adminLoginMessage" class="login-message"></div>
+
+            <button type="submit" class="login-btn" id="adminLoginButton">Login</button>
+        </form>
+
+        <div class="login-footer">
+            <p>Authorized HireNest administrators only.</p>
+        </div>
+    </div>
+</section>
+
+<script>
+const ADMIN_API="http://localhost/Job_Portal/Backend/admin";
+const adminLoginForm=document.getElementById("adminLoginForm");
+const adminLoginMessage=document.getElementById("adminLoginMessage");
+const adminLoginButton=document.getElementById("adminLoginButton");
+
+adminLoginForm.addEventListener("submit",async function(event){
+    event.preventDefault();
+
+    const email=document.getElementById("adminEmail").value.trim();
+    const password=document.getElementById("adminPassword").value;
+
+    if(!email||!password){
+        adminLoginMessage.textContent="Email and password are required.";
+        adminLoginMessage.className="login-message show error";
+        return;
+    }
+
+    adminLoginButton.disabled=true;
+    adminLoginButton.textContent="Logging in...";
+    adminLoginMessage.textContent="";
+    adminLoginMessage.className="login-message";
+
+    try{
+        const formData=new URLSearchParams();
+        formData.append("email",email);
+        formData.append("password",password);
+
+        const response=await fetch(`${ADMIN_API}/login.php`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/x-www-form-urlencoded"
+            },
+            body:formData
+        });
+
+        const data=await response.json();
+
+        console.log("ADMIN LOGIN:",data);
+
+        if(!data.success){
+            adminLoginMessage.textContent=data.message||"Invalid admin login.";
+            adminLoginMessage.className="login-message show error";
+            adminLoginButton.disabled=false;
+            adminLoginButton.textContent="Login";
+            return;
+        }
+
+        if(!data.admin||!data.admin.log_id||data.admin.usertype!=="Admin"){
+            adminLoginMessage.textContent="Invalid admin account information.";
+            adminLoginMessage.className="login-message show error";
+            adminLoginButton.disabled=false;
+            adminLoginButton.textContent="Login";
+            return;
+        }
+
+        localStorage.setItem("admin_log_id",String(data.admin.log_id));
+        localStorage.setItem("admin_email",data.admin.email);
+        localStorage.setItem("admin_usertype",data.admin.usertype);
+
+        adminLoginMessage.textContent="Admin login successful.";
+        adminLoginMessage.className="login-message show success";
+
+        setTimeout(function(){
+            window.location.href="dashboard.html";
+        },500);
+
+    }catch(error){
+        console.error("Admin login error:",error);
+
+        adminLoginMessage.textContent="Unable to connect to server.";
+        adminLoginMessage.className="login-message show error";
+
+        adminLoginButton.disabled=false;
+        adminLoginButton.textContent="Login";
+    }
+});
+</script>
+
+</body>
+</html>

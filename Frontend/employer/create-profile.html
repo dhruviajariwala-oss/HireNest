@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>HireNest - Create Employer Profile</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/style.css"
+    >
+
+</head>
+
+<body>
+
+
+<header class="navbar">
+
+    <div class="logo">
+        Hire<span>Nest</span>
+    </div>
+
+    <nav id="mainNavbar"></nav>
+
+    <div
+        class="nav-buttons"
+        id="navButtons"
+    ></div>
+
+</header>
+
+
+<section class="login-section">
+
+    <div class="login-card">
+
+        <div class="login-header">
+
+            <span class="section-tag">
+                EMPLOYER PROFILE
+            </span>
+
+            <h1>
+                Create Your Company Profile
+            </h1>
+
+            <p>
+                Complete your company information before
+                posting jobs and reviewing applications.
+            </p>
+
+        </div>
+
+
+        <form id="createEmployerProfileForm">
+
+
+            <!-- COMPANY NAME -->
+
+            <div class="form-group">
+
+                <label for="employerName">
+                    Company Name
+                </label>
+
+                <input
+                    type="text"
+                    id="employerName"
+                    name="ename"
+                    placeholder="Enter company name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- COMPANY TYPE -->
+
+            <div class="form-group">
+
+                <label for="employerType">
+                    Company Type
+                </label>
+
+                <input
+                    type="text"
+                    id="employerType"
+                    name="etype"
+                    placeholder="e.g. Private Limited, Startup, Partnership"
+                >
+
+            </div>
+
+
+            <!-- INDUSTRY -->
+
+            <div class="form-group">
+
+                <label for="employerIndustry">
+                    Industry
+                </label>
+
+                <input
+                    type="text"
+                    id="employerIndustry"
+                    name="industry"
+                    placeholder="e.g. Information Technology"
+                >
+
+            </div>
+
+
+            <!-- ADDRESS -->
+
+            <div class="form-group">
+
+                <label for="employerAddress">
+                    Company Address
+                </label>
+
+                <textarea
+                    id="employerAddress"
+                    name="address"
+                    rows="4"
+                    placeholder="Enter complete company address"
+                ></textarea>
+
+            </div>
+
+
+            <!-- PINCODE -->
+
+            <div class="form-group">
+
+                <label for="employerPincode">
+                    Pincode
+                </label>
+
+                <input
+                    type="text"
+                    id="employerPincode"
+                    name="pincode"
+                    placeholder="Enter pincode"
+                >
+
+            </div>
+
+
+            <!-- EXECUTIVE -->
+
+            <div class="form-group">
+
+                <label for="employerExecutive">
+                    Contact Person
+                </label>
+
+                <input
+                    type="text"
+                    id="employerExecutive"
+                    name="executive"
+                    placeholder="Enter HR / Executive name"
+                >
+
+            </div>
+
+
+            <!-- PHONE -->
+
+            <div class="form-group">
+
+                <label for="employerPhone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="employerPhone"
+                    name="phone"
+                    placeholder="Enter company contact number"
+                >
+
+            </div>
+
+
+            <!-- LOCATION -->
+
+            <div class="form-group">
+
+                <label for="employerLocation">
+                    Location
+                </label>
+
+                <input
+                    type="text"
+                    id="employerLocation"
+                    name="location"
+                    placeholder="e.g. Ahmedabad"
+                >
+
+            </div>
+
+
+            <!-- PROFILE -->
+
+            <div class="form-group">
+
+                <label for="employerProfile">
+                    Company Description
+                </label>
+
+                <textarea
+                    id="employerProfile"
+                    name="profile"
+                    rows="6"
+                    placeholder="Describe your company, work culture, services and other details..."
+                ></textarea>
+
+            </div>
+
+
+            <div
+                id="employerProfileMessage"
+                class="login-message"
+            ></div>
+
+
+            <button
+                type="submit"
+                class="login-btn"
+                id="createEmployerProfileButton"
+            >
+                Create Profile
+            </button>
+
+        </form>
+
+
+        <div class="login-footer">
+
+            <p>
+                Already created your profile?
+
+                <a href="profile.html">
+                    View Profile
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <div class="footer-main">
+
+        <div class="footer-brand">
+
+            <div class="logo">
+                Hire<span>Nest</span>
+            </div>
+
+            <p>
+                Connecting talented people with great
+                career opportunities.
+            </p>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>
+                For Job Seekers
+            </h4>
+
+            <a href="../jobseeker/login.html">
+                Login
+            </a>
+
+            <a href="../jobseeker/register.html">
+                Create Account
+            </a>
+
+            <a href="../jobseeker/jobs.html">
+                Find Jobs
+            </a>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>
+                For Employers
+            </h4>
+
+            <a href="dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="applications.html">
+                Applications
+            </a>
+
+            <a href="post-job.html">
+                Post a Job
+            </a>
+
+            <a href="profile.html">
+                Profile
+            </a>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <h4>
+                Company
+            </h4>
+
+            <a href="../index.html#about">
+                About Us
+            </a>
+
+            <a href="../index.html#contact">
+                Contact
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 HireNest. All rights reserved.
+        </p>
+
+        <p>
+            Built for connecting people with opportunities.
+        </p>
+
+    </div>
+
+</footer>
+
+
+<script src="../js/script.js"></script>
+
+</body>
+
+</html>

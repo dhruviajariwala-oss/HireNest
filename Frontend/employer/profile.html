@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>HireNest - Employer Profile</title>
+
+<link
+    rel="stylesheet"
+    href="../css/style.css"
+>
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+<div class="logo">
+    Hire<span>Nest</span>
+</div>
+<nav id="mainNavbar"></nav>
+<div
+    class="nav-buttons"
+    id="navButtons"
+></div>
+</header>
+<section class="login-section">
+
+<div class="login-card">
+    <div class="login-header">
+
+        <span class="section-tag">
+            EMPLOYER PROFILE
+        </span>
+
+        <h1 id="profileCompanyName">
+            Loading...
+        </h1>
+
+        <p id="profileEmail">
+            Loading profile...
+        </p>
+
+    </div>
+
+    <!-- COMPANY NAME -->
+
+    <div class="form-group">
+
+        <label>
+            Company Name
+        </label>
+
+        <input
+            type="text"
+            id="profileCompanyNameInput"
+            readonly
+        >
+
+    </div>
+
+    <!-- EMPLOYER TYPE -->
+
+    <div class="form-group">
+
+        <label>
+            Employer Type
+        </label>
+
+        <input
+            type="text"
+            id="profileEmployerType"
+            readonly
+        >
+    </div>
+
+    <!-- INDUSTRY -->
+
+    <div class="form-group">
+        <label>
+            Industry
+        </label>
+
+        <input
+            type="text"
+            id="profileIndustry"
+            readonly
+        >
+    </div>
+
+    <!-- ADDRESS -->
+
+    <div class="form-group">
+        <label>
+            Address
+        </label>
+        <input
+            type="text"
+            id="profileAddress"
+            readonly
+        >
+    </div>
+
+    <!-- PINCODE -->
+
+    <div class="form-group">
+
+        <label>
+            Pincode
+        </label>
+
+        <input
+            type="text"
+            id="profilePincode"
+            readonly
+        >
+    </div>
+
+    <!-- EXECUTIVE -->
+
+    <div class="form-group">
+
+        <label>
+            Contact Person
+        </label>
+
+        <input
+            type="text"
+            id="profileExecutive"
+            readonly
+        >
+    </div>
+
+    <!-- PHONE -->
+
+    <div class="form-group">
+
+        <label>
+            Phone
+        </label>
+
+        <input
+            type="text"
+            id="profilePhone"
+            readonly
+        >
+    </div>
+
+    <!-- LOCATION -->
+
+    <div class="form-group">
+
+        <label>
+            Location
+        </label>
+
+        <input
+            type="text"
+            id="profileLocation"
+            readonly
+        >
+    </div>
+
+    <!-- COMPANY PROFILE -->
+
+    <div class="form-group company-profile-group">
+
+        <label for="profileDescription">
+            Company Profile
+        </label>
+
+        <textarea
+            id="profileDescription"
+            rows="4"
+            readonly
+            placeholder="Company profile"
+        ></textarea>
+
+    </div>
+        
+    <!-- MESSAGE -->
+
+    <div
+        id="profileMessage"
+        class="login-message"
+    ></div>
+
+    <!-- ACTIONS -->
+
+    <div class="profile-actions">
+
+        <a
+            href="edit-profile.html"
+            class="btn btn-primary"
+        >
+            Edit Profile
+        </a>
+
+        <a
+            href="dashboard.html"
+            class="btn btn-outline"
+        >
+            Save
+        </a>
+    </div>
+</div>
+</section>
+<footer>
+
+<div class="footer-main">
+    <div class="footer-brand">
+        <div class="logo">
+            Hire<span>Nest</span>
+        </div>
+
+        <p>
+            Connecting talented people with great
+            career opportunities.
+        </p>
+    </div>
+
+    <div class="footer-links">
+
+        <h4>
+            For Job Seekers
+        </h4>
+
+        <a href="../jobseeker/login.html">
+            Login
+        </a>
+
+        <a href="../jobseeker/register.html">
+            Create Account
+        </a>
+
+        <a href="../jobseeker/jobs.html">
+            Find Jobs
+        </a>
+
+    </div>
+
+    <div class="footer-links">
+
+        <h4>
+            For Employers
+        </h4>
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="my-jobs.html">
+            My Jobs
+        </a>
+
+        <a href="applications.html">
+            Applications
+        </a>
+
+        <a href="post-job.html">
+            Post a Job
+        </a>
+
+        <a href="profile.html">
+            Profile
+        </a>
+
+    </div>
+
+    <div class="footer-links">
+
+        <h4>
+            Company
+        </h4>
+
+        <a href="../index.html#about">
+            About Us
+        </a>
+
+        <a href="../index.html#contact">
+            Contact
+        </a>
+
+    </div>
+
+</div>
+
+<div class="footer-bottom">
+
+    <p>
+        © 2026 HireNest. All rights reserved.
+    </p>
+
+    <p>
+        Built for connecting people with opportunities.
+    </p>
+
+</div>
+</footer>
+
+<script src="../js/script.js"></script>
+
+<script>
+
+/* =========================
+   LOAD EMPLOYER PROFILE
+========================= */
+
+const API_BASE_PROFILE =
+    "http://localhost/Job_Portal/Backend";
+
+
+async function loadEmployerProfile() {
+
+    const message =
+        document.getElementById(
+            "profileMessage"
+        );
+
+
+    const logId =
+        localStorage.getItem(
+            "log_id"
+        );
+
+
+        const usertype =
+        localStorage.getItem(
+            "usertype"
+        );
+
+    /* =========================
+       LOGIN CHECK
+    ========================= */
+    if (
+        !logId ||
+        usertype !== "Employer"
+    ) {
+        window.location.href =
+            "login.html";
+        return;
+    }
+
+    try {
+        const response =
+            await fetch(
+                `${API_BASE_PROFILE}/employer/profile.php?log_id=${encodeURIComponent(logId)}`,
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+        const data =
+            await response.json();
+
+        console.log(
+            "EMPLOYER PROFILE:",
+            data
+        );
+
+        /* =========================
+           PROFILE NOT FOUND
+        ========================= */
+        if (
+            !data.success ||
+            !data.employer
+        ) {
+            message.textContent =
+                data.message ||
+                "Employer profile not found.";
+
+            message.className =
+                "login-message show error";
+
+            setTimeout(() => {
+                window.location.href =
+                    "create-profile.html";
+            }, 1200);
+            return;
+        }
+
+        /* =========================
+           GET EMPLOYER DATA
+        ========================= */
+
+        const employer =
+            data.employer;
+
+        /* HEADER */
+
+        document.getElementById(
+            "profileCompanyName"
+        ).textContent =
+            employer.ename ||
+            "Employer";
+
+        document.getElementById(
+            "profileEmail"
+        ).textContent =
+            employer.email ||
+            "Email not available";
+
+        /* COMPANY NAME */
+
+        document.getElementById(
+            "profileCompanyNameInput"
+        ).value =
+            employer.ename ||
+            "Not provided";
+
+        /* EMPLOYER TYPE */
+
+        document.getElementById(
+            "profileEmployerType"
+        ).value =
+            employer.etype ||
+            "Not provided";
+
+        /* INDUSTRY */
+
+        document.getElementById(
+            "profileIndustry"
+        ).value =
+            employer.industry ||
+            "Not provided";
+
+        /* ADDRESS */
+
+        document.getElementById(
+            "profileAddress"
+        ).value =
+            employer.address ||
+            "Not provided";
+
+        /* PINCODE */
+
+        document.getElementById(
+            "profilePincode"
+        ).value =
+            employer.pincode ||
+            "Not provided";
+
+        /* EXECUTIVE */
+
+        document.getElementById(
+            "profileExecutive"
+        ).value =
+            employer.executive ||
+            "Not provided";
+
+        /* PHONE */
+
+        document.getElementById(
+            "profilePhone"
+        ).value =
+            employer.phone ||
+            "Not provided";
+
+        /* LOCATION */
+
+        document.getElementById(
+            "profileLocation"
+        ).value =
+            employer.location ||
+            "Not provided";
+
+        /* COMPANY PROFILE */
+
+        document.getElementById(
+            "profileDescription"
+        ).value =
+            employer.profile ||
+            "Not provided";
+
+        /* =========================
+           SAVE EMPLOYER ID
+        ========================= */
+
+        localStorage.setItem(
+            "employer_id",
+            String(
+                employer.eid
+            )
+        );
+    } catch (error) {
+        console.error(
+            "Employer profile loading error:",
+            error
+        );
+
+        message.textContent =
+            "Unable to connect to server.";
+
+        message.className =
+            "login-message show error";
+    }
+}
+
+/* =========================
+   DOM READY
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadEmployerProfile();
+
+    }
+);
+</script>
+</body>
+</html>

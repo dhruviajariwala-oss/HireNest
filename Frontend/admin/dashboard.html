@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>HireNest - Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        *{box-sizing:border-box}
+        body{margin:0;background:#f6f8fc;color:#111827;font-family:Arial,sans-serif}
+        .admin-layout{display:flex;min-height:100vh}
+        .admin-sidebar{width:245px;background:#111a2e;color:#fff;padding:24px 16px;position:fixed;top:0;bottom:0;left:0}
+        .admin-brand{font-size:27px;font-weight:700;padding:4px 12px 35px}
+        .admin-brand span{color:#6957ff}
+        .admin-menu{display:flex;flex-direction:column;gap:7px}
+        .admin-menu a{color:#d5dbea;text-decoration:none;padding:13px 15px;border-radius:10px;font-size:15px}
+        .admin-menu a:hover,.admin-menu a.active{background:#5b4bef;color:#fff}
+        .admin-main{margin-left:245px;width:calc(100% - 245px);min-height:100vh}
+        .admin-topbar{height:70px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;padding:0 30px}
+        .admin-topbar h2{margin:0;font-size:22px}
+        .admin-user{display:flex;align-items:center;gap:12px}
+        .admin-avatar{width:38px;height:38px;border-radius:50%;background:#eeeaff;display:flex;align-items:center;justify-content:center}
+        .admin-email{font-size:14px;color:#374151}
+        .admin-logout{border:1px solid #ef4444;background:#fff;color:#dc2626;padding:8px 15px;border-radius:8px;font-weight:600;cursor:pointer}
+        .admin-logout:hover{background:#ef4444;color:#fff}
+        .admin-content{padding:28px 30px}
+        .welcome-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+        .admin-welcome h1{margin:0 0 6px;font-size:28px}
+        .admin-welcome p{margin:0;color:#64748b;font-size:14px}
+        .date-box{background:#fff;border:1px solid #e5e7eb;border-radius:9px;padding:10px 14px;color:#64748b;font-size:13px}
+        .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+        .stat-card{background:#fff;border:1px solid #e2e6ed;border-radius:13px;padding:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 12px rgba(15,23,42,.04)}
+        .stat-label{font-size:14px;color:#64748b}
+        .stat-number{font-size:29px;font-weight:700;margin:6px 0}
+        .stat-sub{font-size:12px;color:#94a3b8}
+        .stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px}
+        .icon-user{background:#eeeaff}
+        .icon-company{background:#eaf0ff}
+        .icon-job{background:#e8f8ed}
+        .icon-application{background:#fff0e4}
+        .admin-card{background:#fff;border:1px solid #e2e6ed;border-radius:13px;padding:21px;box-shadow:0 3px 12px rgba(15,23,42,.04)}
+        .card-title{margin:0 0 5px;font-size:19px}
+        .card-description{margin:0 0 18px;color:#64748b;font-size:14px}
+        .quick-card{margin-bottom:20px}
+        .quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+        .quick-action{position:relative;display:flex;align-items:flex-start;gap:14px;min-height:125px;padding:18px;border:1px solid #e1e5eb;border-radius:11px;text-decoration:none;color:#111827;transition:.2s}
+        .quick-action:hover{border-color:#6957ff;box-shadow:0 5px 15px rgba(105,87,255,.1);transform:translateY(-2px)}
+        .quick-icon{width:45px;height:45px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+        .quick-user{background:#eeeaff}
+        .quick-job{background:#eaf0ff}
+        .quick-app{background:#fff0e4}
+        .quick-content strong{display:block;font-size:16px;margin:2px 0 7px}
+        .quick-content span{display:block;color:#64748b;font-size:13px;line-height:1.5}
+        .quick-arrow{position:absolute;right:14px;bottom:13px;color:#6957ff;font-size:18px}
+        .bottom-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+        .activity-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #edf0f4}
+        .activity-item:last-child{border-bottom:0}
+        .activity-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .activity-content{flex:1}
+        .activity-title{font-size:13px;font-weight:700;margin-bottom:3px}
+        .activity-text{font-size:12px;color:#64748b}
+        .activity-time{font-size:12px;color:#64748b}
+        .system-item{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #edf0f4;font-size:14px}
+        .system-item:last-child{border-bottom:0}
+        .status{padding:5px 10px;border-radius:20px;background:#dcfce7;color:#15803d;font-size:12px;font-weight:700}
+        .dashboard-message{display:none;padding:12px;margin-bottom:18px;border-radius:8px;font-size:14px}
+        .dashboard-message.show{display:block}
+        .dashboard-message.error{background:#fee2e2;color:#991b1b}
+        @media(max-width:1100px){
+            .stats-grid{grid-template-columns:repeat(2,1fr)}
+            .quick-actions{grid-template-columns:1fr 1fr}
+        }
+        @media(max-width:800px){
+            .admin-sidebar{width:210px}
+            .admin-main{margin-left:210px;width:calc(100% - 210px)}
+            .admin-content{padding:22px}
+            .bottom-grid{grid-template-columns:1fr}
+            .date-box{display:none}
+        }
+        @media(max-width:600px){
+            .admin-layout{display:block}
+            .admin-sidebar{position:relative;width:100%;height:auto}
+            .admin-main{margin-left:0;width:100%}
+            .admin-menu{flex-direction:row;overflow-x:auto}
+            .admin-menu a{white-space:nowrap}
+            .stats-grid{grid-template-columns:1fr}
+            .quick-actions{grid-template-columns:1fr}
+            .welcome-row{display:block}
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+
+        <aside class="admin-sidebar">
+            <div class="admin-brand">Hire<span>Nest</span></div>
+            <nav class="admin-menu">
+                <a href="dashboard.html" class="active">📊 Dashboard</a>
+                <a href="users.html">👥 Users</a>
+                <a href="jobs.html">💼 Jobs</a>
+                <a href="applications.html">📄 Applications</a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-topbar">
+                <h2>Admin Dashboard</h2>
+                <div class="admin-user">
+                    <div class="admin-avatar">👤</div>
+                    <span class="admin-email" id="adminEmail">Admin</span>
+                    <button class="admin-logout" type="button" onclick="adminLogout()">Logout</button>
+                </div>
+            </header>
+
+            <section class="admin-content">
+
+                <div class="welcome-row">
+                    <div class="admin-welcome">
+                        <h1>Welcome, Admin 👋</h1>
+                        <p>Manage HireNest users, jobs and applications from one place.</p>
+                    </div>
+                    <div class="date-box" id="currentDate">📅 Loading...</div>
+                </div>
+
+                <div id="dashboardMessage" class="dashboard-message"></div>
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Job Seekers</div>
+                            <div class="stat-number" id="totalJobseekers">0</div>
+                            <div class="stat-sub">Total Registered</div>
+                        </div>
+                        <div class="stat-icon icon-user">👤</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Employers</div>
+                            <div class="stat-number" id="totalEmployers">0</div>
+                            <div class="stat-sub">Total Registered</div>
+                        </div>
+                        <div class="stat-icon icon-company">🏢</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Total Jobs</div>
+                            <div class="stat-number" id="totalJobs">0</div>
+                            <div class="stat-sub">Total Posted</div>
+                        </div>
+                        <div class="stat-icon icon-job">💼</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Applications</div>
+                            <div class="stat-number" id="totalApplications">0</div>
+                            <div class="stat-sub">Total Received</div>
+                        </div>
+                        <div class="stat-icon icon-application">📄</div>
+                    </div>
+
+                </div>
+
+                <div class="admin-card quick-card">
+                    <h3 class="card-title">Quick Management</h3>
+                    <p class="card-description">Access the main administration sections.</p>
+
+                    <div class="quick-actions">
+
+                        <a href="users.html" class="quick-action">
+                            <div class="quick-icon quick-user">👥</div>
+                            <div class="quick-content">
+                                <strong>Manage Users</strong>
+                                <span>View and manage job seekers and employers.</span>
+                            </div>
+                            <div class="quick-arrow">→</div>
+                        </a>
+
+                        <a href="jobs.html" class="quick-action">
+                            <div class="quick-icon quick-job">💼</div>
+                            <div class="quick-content">
+                                <strong>Manage Jobs</strong>
+                                <span>View and manage job postings.</span>
+                            </div>
+                            <div class="quick-arrow">→</div>
+                        </a>
+
+                        <a href="applications.html" class="quick-action">
+                            <div class="quick-icon quick-app">📄</div>
+                            <div class="quick-content">
+                                <strong>Applications</strong>
+                                <span>Review applications and update status.</span>
+                            </div>
+                            <div class="quick-arrow">→</div>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div class="bottom-grid">
+
+                    <div class="admin-card">
+                        <h3 class="card-title">Recent Activities</h3>
+                        <p class="card-description">Latest activities on the platform.</p>
+
+                        <div class="activity-item">
+                            <div class="activity-icon icon-user">👤</div>
+                            <div class="activity-content">
+                                <div class="activity-title">User Management</div>
+                                <div class="activity-text">Manage registered job seekers and employers.</div>
+                            </div>
+                            <div class="activity-time">Users</div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon icon-job">💼</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Job Management</div>
+                                <div class="activity-text">Review and manage job postings.</div>
+                            </div>
+                            <div class="activity-time">Jobs</div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon icon-application">📄</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Application Management</div>
+                                <div class="activity-text">Review applications and update status.</div>
+                            </div>
+                            <div class="activity-time">Applications</div>
+                        </div>
+
+                    </div>
+
+                    <div class="admin-card">
+                        <h3 class="card-title">System Overview</h3>
+                        <p class="card-description">Current administration status.</p>
+
+                        <div class="system-item">
+                            <span>Admin Authentication</span>
+                            <span class="status">Active</span>
+                        </div>
+
+                        <div class="system-item">
+                            <span>User Management</span>
+                            <span class="status">Active</span>
+                        </div>
+
+                        <div class="system-item">
+                            <span>Job Management</span>
+                            <span class="status">Active</span>
+                        </div>
+
+                        <div class="system-item">
+                            <span>Application Management</span>
+                            <span class="status">Active</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE="http://localhost/Job_Portal/Backend";
+
+        function checkAdminLogin(){
+            const logId=localStorage.getItem("admin_log_id");
+            const usertype=localStorage.getItem("admin_usertype");
+
+            if(!logId||usertype!=="Admin"){
+                window.location.replace("login.html");
+                return false;
+            }
+
+            const email=localStorage.getItem("admin_email");
+            if(email)document.getElementById("adminEmail").textContent=email;
+            return true;
+        }
+
+        function showCurrentDate(){
+            const date=new Date();
+            document.getElementById("currentDate").textContent="📅 "+date.toLocaleDateString("en-US",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+        }
+
+        async function loadDashboard(){
+            if(!checkAdminLogin())return;
+
+            try{
+                const response=await fetch(`${API_BASE}/admin/dashboard.php`,{method:"GET"});
+
+                if(!response.ok)throw new Error("Server error");
+
+                const data=await response.json();
+
+                if(!data.success){
+                    const message=document.getElementById("dashboardMessage");
+                    message.textContent=data.message||"Unable to load dashboard.";
+                    message.className="dashboard-message show error";
+                    return;
+                }
+
+                const dashboard=data.dashboard||{};
+
+                document.getElementById("totalJobseekers").textContent=dashboard.total_jobseekers??0;
+                document.getElementById("totalEmployers").textContent=dashboard.total_employers??0;
+                document.getElementById("totalJobs").textContent=dashboard.total_jobs??0;
+                document.getElementById("totalApplications").textContent=dashboard.total_applications??0;
+
+            }catch(error){
+                console.error("Dashboard error:",error);
+                const message=document.getElementById("dashboardMessage");
+                message.textContent="Unable to connect to server.";
+                message.className="dashboard-message show error";
+            }
+        }
+
+        function adminLogout(){
+            localStorage.removeItem("admin_log_id");
+            localStorage.removeItem("admin_email");
+            localStorage.removeItem("admin_usertype");
+            window.location.replace("login.html");
+        }
+
+        document.addEventListener("DOMContentLoaded",function(){
+            showCurrentDate();
+            loadDashboard();
+        });
+    </script>
+
+</body>
+</html>
